@@ -42,7 +42,7 @@ function App() {
   return (
     <div className="min-h-screen flex justify-end items-center flex-col bg-slate-800 overflow-hidden">
           {todos.map((todo, index) => (
-            <div key={index} className="flex w-[400px] h-[49px] justify-between text-white py-3 px-4 mb-1 bg-slate-700 items-center">
+            <div key={index} className="flex w-[350px] h-[49px] justify-between text-white py-3 px-4 mb-1 bg-slate-700 items-center">
               <div className="flex justify-center items-center">
                     <input
                       type="checkbox"
@@ -66,7 +66,7 @@ function App() {
           ))}
       
       <form
-        className="flex mt-5 rounded-md bg-slate-600 w-[400px] h-[50px] mb-5"
+        className="flex mt-5 rounded-md bg-slate-600 w-[350px] h-[50px] mb-5"
         onSubmit={addTodo}
         >
         <input
