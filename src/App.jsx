@@ -40,10 +40,12 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex justify-end items-center flex-col bg-slate-800 overflow-hidden">
+    <div className="bg-slate-800">
+    <div className="h-screen flex justify-end items-center flex-col bg-slate-800 overflow-hidden mx-3">
+      
           {todos.map((todo, index) => (
-            <div key={index} className="flex w-[350px] h-[49px] justify-between text-white py-3 px-4 mb-1 bg-slate-700 items-center">
-              <div className="flex justify-center items-center">
+            <div key={index} className="flex w-full  justify-between text-white py-3 px-4 mb-1 bg-slate-700 items-center mx-10">
+              <div className="flex justify-center items-center md:flex">
                     <input
                       type="checkbox"
                       checked={todo.completed}
@@ -51,12 +53,12 @@ function App() {
                       className="mr-2"
                     />
               </div>
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-center w-full mx-5 md:flex">
                   <p className={`text-white text-3xl flex justify-center items-center ${
                       todo.completed ? "line-through" : ""
                     }`}>{todo.text}</p>
               </div>
-              <div className="flex justify-center items-center">
+              <div className="flex justify-center items-center md:flex">
                         <img 
                       onClick={() => deleteTodo(index)}
                       className="float-right"
@@ -66,7 +68,7 @@ function App() {
           ))}
       
       <form
-        className="flex mt-5 rounded-md bg-slate-600 w-[350px] h-[50px] mb-5"
+        className="flex mt-5 rounded-md bg-slate-600 w-full h-[60px] mb-5 mx-10"
         onSubmit={addTodo}
         >
         <input
@@ -76,12 +78,13 @@ function App() {
           ref={todoText}
         />
         <input
-          className="p-3 bg-slate-700 cursor-pointer text-bold text-white"
+          className="p-3 bg-slate-700 cursor-pointer text-bold text-white ml-3"
           type="submit"
           value="Add Todo"
         />
       </form>
-    </div>
+      </div>
+      </div>
   );
 }
 
