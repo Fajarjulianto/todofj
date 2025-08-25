@@ -70,7 +70,7 @@ function App() {
       <div className="w-full max-w-2xl">
         <header className="text-center my-8">
           <h1 className="text-4xl sm:text-5xl font-bold text-violet-400">
-            TodoModern
+            TodoFJ
           </h1>
           <p className="text-slate-400 mt-2">A simple and modern to-do list.</p>
         </header>
