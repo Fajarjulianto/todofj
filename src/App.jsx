@@ -1,91 +1,138 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { FaPlus, FaTrashAlt } from "react-icons/fa";
 
+// Komponen untuk satu item To-Do
+function TodoItem({ todo, onToggle, onDelete }) {
+  return (
+    <li className="flex items-center gap-4 p-4 bg-slate-800 rounded-lg shadow-md transition-all duration-300 hover:bg-slate-700">
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={() => onToggle(todo.id)}
+        className="form-checkbox h-5 w-5 rounded text-violet-500 bg-slate-700 border-slate-600 focus:ring-violet-500 cursor-pointer"
+      />
+      <span
+        className={`flex-1 text-lg ${
+          todo.completed ? "line-through text-slate-500" : "text-slate-100"
+        }`}
+      >
+        {todo.text}
+      </span>
+      <button
+        onClick={() => onDelete(todo.id)}
+        className="p-2 text-slate-500 rounded-full hover:bg-red-500 hover:text-white transition-colors duration-200"
+        aria-label="Delete todo"
+      >
+        {/* Perubahan: Gunakan komponen FaTrashAlt */}
+        <FaTrashAlt size={18} />
+      </button>
+    </li>
+  );
+}
+
+// Komponen utama aplikasi
 function App() {
-  const [todos, setTodos] = useState([]);
-  const todoText = useRef();
+  const [newTodoText, setNewTodoText] = useState("");
+  const [todos, setTodos] = useState(() => {
+    const savedTodos = localStorage.getItem("todos");
+    return savedTodos ? JSON.parse(savedTodos) : [];
+  });
 
-  useEffect (() => {
-    if (typeof window !== 'undefined') {
-      const existingTodos = localStorage.getItem( 'todos');
-      setTodos (existingTodos ? JSON. parse(existingTodos) : []);
-    }
-  }, [])
-  
-  useEffect (() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem( 'todos', JSON. stringify( todos) );
-    }
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 
   const addTodo = (e) => {
     e.preventDefault();
-    const trimmedText = todoText.current.value.trim(); // Remove leading/trailing spaces
+    const trimmedText = newTodoText.trim();
     if (trimmedText) {
-      const next = [...todos, { text: trimmedText, completed: false }];
-      setTodos(next);
-      todoText.current.value = ""; // Clear the input field
+      const newTodo = { id: Date.now(), text: trimmedText, completed: false };
+      setTodos((prevTodos) => [newTodo, ...prevTodos]);
+      setNewTodoText("");
     }
   };
 
-  const toggleTodo = (index) => {
-    const updatedTodos = todos.map((todo, i) =>
-      i === index ? { ...todo, completed: !todo.completed } : todo
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
     );
-    setTodos(updatedTodos);
   };
 
-  const deleteTodo = (index) => {
-    const updatedTodos = todos.filter((_, i) => i !== index);
-    setTodos(updatedTodos);
+  const deleteTodo = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   return (
-    <div className="bg-slate-800">
-    <div className="h-screen flex justify-end items-center flex-col bg-slate-800 overflow-hidden mx-3">
-      
-          {todos.map((todo, index) => (
-            <div key={index} className="flex w-full  justify-between text-white py-3 px-4 mb-1 bg-slate-700 items-center mx-10">
-              <div className="flex justify-center items-center md:flex">
-                    <input
-                      type="checkbox"
-                      checked={todo.completed}
-                      onChange={() => toggleTodo(index)}
-                      className="mr-2"
-                    />
+    <div className="min-h-screen bg-slate-900 font-sans text-white flex justify-center p-4 sm:p-6 lg:p-8">
+      <div className="w-full max-w-2xl">
+        <header className="text-center my-8">
+          <h1 className="text-4xl sm:text-5xl font-bold text-violet-400">
+            TodoModern
+          </h1>
+          <p className="text-slate-400 mt-2">A simple and modern to-do list.</p>
+        </header>
+
+        <main>
+          <form onSubmit={addTodo} className="flex gap-3 mb-8">
+            <input
+              type="text"
+              value={newTodoText}
+              onChange={(e) => setNewTodoText(e.target.value)}
+              placeholder="What needs to be done?"
+              className="flex-grow p-3 bg-slate-800 rounded-lg border-2 border-slate-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+            />
+            <button
+              type="submit"
+              className="flex-shrink-0 flex items-center gap-2 bg-violet-600 font-semibold px-5 py-3 rounded-lg hover:bg-violet-700 transition-colors duration-200 disabled:bg-slate-600 disabled:cursor-not-allowed"
+              disabled={!newTodoText.trim()}
+            >
+              <FaPlus size={16} />
+              <span>Add</span>
+            </button>
+          </form>
+
+          <div className="space-y-4">
+            {todos.length > 0 ? (
+              <ul className="space-y-3">
+                {todos.map((todo) => (
+                  <TodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onToggle={toggleTodo}
+                    onDelete={deleteTodo}
+                  />
+                ))}
+              </ul>
+            ) : (
+              <div className="text-center py-10 px-4 bg-slate-800 rounded-lg">
+                <p className="text-slate-400">
+                  🎉 You&apos;re all caught up! 🎉
+                </p>
+                <p className="text-slate-500 text-sm">
+                  Add a new task to get started.
+                </p>
               </div>
-              <div className="flex justify-center items-center w-full mx-5 md:flex">
-                  <p className={`text-white text-3xl flex justify-center items-center ${
-                      todo.completed ? "line-through" : ""
-                    }`}>{todo.text}</p>
-              </div>
-              <div className="flex justify-center items-center md:flex">
-                        <img 
-                      onClick={() => deleteTodo(index)}
-                      className="float-right"
-                      src="./trash.svg"/>
-              </div>
-            </div>
-          ))}
-      
-      <form
-        className="flex mt-5 rounded-md bg-slate-600 w-full h-[60px] mb-5 mx-10"
-        onSubmit={addTodo}
-        >
-        <input
-          className="p-3 bg-slate-600 focus:outline-none text-white flex-grow"
-          type="text"
-          placeholder="Add Todo..."
-          ref={todoText}
-        />
-        <input
-          className="p-3 bg-slate-700 cursor-pointer text-bold text-white ml-3"
-          type="submit"
-          value="Add Todo"
-        />
-      </form>
+            )}
+          </div>
+        </main>
       </div>
-      </div>
+    </div>
   );
 }
+TodoItem.propTypes = {
+  // 'todo' harus berupa objek (shape) dengan struktur tertentu
+  todo: PropTypes.shape({
+    id: PropTypes.number.isRequired, // id harus angka dan wajib ada
+    text: PropTypes.string.isRequired, // text harus string dan wajib ada
+    completed: PropTypes.bool.isRequired, // completed harus boolean dan wajib ada
+  }).isRequired, // Objek 'todo' itu sendiri juga wajib ada
+
+  // Validasi untuk props lainnya juga
+  onToggle: PropTypes.func.isRequired, // onToggle harus fungsi dan wajib ada
+  onDelete: PropTypes.func.isRequired, // onDelete harus fungsi dan wajib ada
+};
 
 export default App;
